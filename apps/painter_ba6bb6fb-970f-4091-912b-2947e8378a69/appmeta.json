@@ -1,0 +1,6 @@
+{
+    "appmeta_version": 0,
+    "id": "painter_ba6bb6fb-970f-4091-912b-2947e8378a69",
+    "name": "Painter",
+    "entry_point_path": "painter.py"
+}

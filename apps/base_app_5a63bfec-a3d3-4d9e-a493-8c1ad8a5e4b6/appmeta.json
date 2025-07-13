@@ -1,0 +1,6 @@
+{
+    "appmeta_version": 0,
+    "id": "base_app_5a63bfec-a3d3-4d9e-a493-8c1ad8a5e4b6",
+    "name": "Base App",
+    "entry_point_path": "base_app.py"
+}

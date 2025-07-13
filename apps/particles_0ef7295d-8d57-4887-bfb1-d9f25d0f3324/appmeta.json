@@ -1,0 +1,6 @@
+{
+    "appmeta_version": 0,
+    "id": "particles_0ef7295d-8d57-4887-bfb1-d9f25d0f3324",
+    "name": "Particles",
+    "entry_point_path": "particles.py"
+}

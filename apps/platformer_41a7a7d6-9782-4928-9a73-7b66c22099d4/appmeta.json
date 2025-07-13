@@ -1,0 +1,6 @@
+{
+    "appmeta_version": 0,
+    "id": "platformer_41a7a7d6-9782-4928-9a73-7b66c22099d4",
+    "name": "Platformer",
+    "entry_point_path": "platformer.py"
+}
