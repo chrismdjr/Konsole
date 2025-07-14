@@ -1,3 +1,2 @@
 pillow
 pyPS4Controller
-potatoes
