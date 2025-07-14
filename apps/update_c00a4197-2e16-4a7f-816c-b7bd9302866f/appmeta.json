@@ -1,0 +1,6 @@
+{
+    "appmeta_version": 0,
+    "id": "update_c00a4197-2e16-4a7f-816c-b7bd9302866f",
+    "name": "Update",
+    "entry_point_path": "update.py"
+}

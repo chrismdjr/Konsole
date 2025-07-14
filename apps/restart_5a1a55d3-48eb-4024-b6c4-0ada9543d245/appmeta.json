@@ -1,0 +1,6 @@
+{
+    "appmeta_version": 0,
+    "id": "restart_5a1a55d3-48eb-4024-b6c4-0ada9543d245",
+    "name": "Restart",
+    "entry_point_path": "restart.py"
+}

@@ -29,8 +29,9 @@ def main():
     init_brightness_multiplier = renderer.brightness_multiplier
 
     # fade into init brightness multiplier
-    for j in range(SPLASH_SCREEN_FRAMERATE * SPLASH_SCREEN_DURATION_SECONDS):
-        renderer.brightness_multiplier = j / 100 * init_brightness_multiplier
+    fade_in_steps = SPLASH_SCREEN_FRAMERATE * SPLASH_SCREEN_DURATION_SECONDS
+    for j in range(fade_in_steps):
+        renderer.brightness_multiplier = j / fade_in_steps * init_brightness_multiplier
 
         renderer.clear()
         for i in range(64):
@@ -39,7 +40,9 @@ def main():
         renderer.draw_text(16, 28, "KONSOLE", (255, 255, 255))
         renderer.present()
 
-        time.sleep(SPLASH_SCREEN_DURATION_SECONDS / 100)
+        time.sleep(SPLASH_SCREEN_DURATION_SECONDS / 2 / 100)
+
+    time.sleep(SPLASH_SCREEN_DURATION_SECONDS / 2)
 
     controller = konsole_controller.Controller()
     controller.wait_for_interface(renderer)
