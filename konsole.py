@@ -22,7 +22,7 @@ def remove_pid_file():
 
 def main():
     write_pid_file()
-    print("Update test")
+    print("Update test 2")
     
     renderer = konsole_renderer.Renderer()
 
