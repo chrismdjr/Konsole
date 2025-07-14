@@ -22,7 +22,7 @@ renderer.present()
 current_commit_process = subprocess.Popen(["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE)
 current_commit_hash, current_commit_stderr = current_commit_process.communicate()
 
-pull_process = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE)
+pull_process = subprocess.Popen(["sudo", "-u", "neo", "git", "pull"], stdout=subprocess.PIPE)
 _, pull_stderr = pull_process.communicate()
 
 new_commit_process = subprocess.Popen(["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE)
