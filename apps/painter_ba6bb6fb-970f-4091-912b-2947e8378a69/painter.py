@@ -9,6 +9,20 @@ import time
 import random
 
 TARGET_FRAMERATE = 60
+BRUSH_COLORS = [
+    (255, 0, 0),
+    (255, 150, 0),
+    (255, 255, 0),
+    (0, 255, 0),
+    (0, 0, 255),
+    (150, 0, 255),
+    (255, 117, 234),
+    (255, 255, 255),
+    (0, 0, 0)
+]
+MIN_BRUSH_SIZE = 1
+MAX_BRUSH_SIZE = 100
+BRUSH_SIZE_VELOCITY_EPSILON = 1
 
 renderer = konsole_renderer.Renderer()
 
@@ -18,12 +32,16 @@ controller.start()
 
 brush_position = [32, 32]
 brush_sensitivity = 1
+brush_size_sensitivity = 0.25
 brush_active = False
+brush_color_index = 0
+brush_size = 1
 
 image = Image.new("RGB", (64, 64))
 draw = ImageDraw.Draw(image)
 
 controller_velocity = [0, 0]
+brush_size_velocity = 0
 
 delta_time = 0
 while True:
@@ -51,39 +69,65 @@ while True:
         if controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_RELEASE:
             brush_active = False
 
+        if controller_event.event_type == konsole_controller.ControllerEventType.L1_PRESS:
+            brush_color_index -= 1
+
+            if brush_color_index < 0:
+                brush_color_index = len(BRUSH_COLORS) - 1
+
+        if controller_event.event_type == konsole_controller.ControllerEventType.R1_PRESS:
+            brush_color_index += 1
+
+            if brush_color_index >= len(BRUSH_COLORS):
+                brush_color_index = 0
+
+        if controller_event.event_type == konsole_controller.ControllerEventType.L2_PRESS:
+            brush_size_velocity = -brush_size_sensitivity * (controller_event.value + 32767) * 0.0001
+
+        if controller_event.event_type == konsole_controller.ControllerEventType.R2_PRESS:
+            brush_size_velocity = brush_size_sensitivity * (controller_event.value + 32767) * 0.0001
+
+        if controller_event.event_type == konsole_controller.ControllerEventType.SQUARE_PRESS:
+            image = Image.new("RGB", (64, 64))
+            draw = ImageDraw.Draw(image)
+
     brush_position[0] += controller_velocity[0]
     brush_position[1] += controller_velocity[1]
+    brush_position[0] = min(max(brush_position[0], 0), 64)
+    brush_position[1] = min(max(brush_position[1], 0), 64)
+    if abs(brush_size_velocity) >= BRUSH_SIZE_VELOCITY_EPSILON:
+        brush_size += brush_size_velocity
+
+    brush_size = min(max(brush_size, MIN_BRUSH_SIZE), MAX_BRUSH_SIZE)
 
     # render
     renderer.clear()
 
     renderer.draw_image(0, 0, image)
 
+    brush_outline_color = (0, 0, 0) if BRUSH_COLORS[brush_color_index] != (0, 0, 0) else (255, 255, 255)
     renderer.draw_ellipse(
-        brush_position[0] - 1,
-        brush_position[1] - 1,
-        2,
-        2
-    , (0, 0, 0))
+        brush_position[0] - brush_size / 2 - 1,
+        brush_position[1] - brush_size / 2 - 1,
+        brush_size + 2,
+        brush_size + 2
+    , brush_outline_color)
 
+    
     renderer.draw_ellipse(
-        brush_position[0] - 0.5,
-        brush_position[1] - 0.5,
-        1,
-        1
-    , (255, 255, 255))
+        brush_position[0] - brush_size / 2,
+        brush_position[1] - brush_size / 2,
+        brush_size,
+        brush_size
+    , BRUSH_COLORS[brush_color_index])
 
     if brush_active:
-        draw.rectangle((
-            brush_position[0] - 0.5,
-            brush_position[1] - 0.5,
-            brush_position[0] + 0.5,
-            brush_position[1] + 0.5
-        ), (
-            random.randint(0, 255),
-            random.randint(0, 255),
-            random.randint(0, 255)
-        ))
+        draw.ellipse((
+            brush_position[0] - brush_size / 2,
+            brush_position[1] - brush_size / 2,
+            brush_position[0] + brush_size / 2,
+            brush_position[1] + brush_size / 2
+        ), BRUSH_COLORS[brush_color_index])
 
     renderer.present()
 
