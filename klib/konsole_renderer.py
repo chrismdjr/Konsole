@@ -2,17 +2,20 @@ import rgbmatrix
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
 class Renderer:
-    def __init__(self, rows, cols):
+    rows = 64
+    cols = 64
+
+    def __init__(self):
         options = rgbmatrix.RGBMatrixOptions()
-        options.rows = rows
-        options.cols = cols
+        options.rows = Renderer.rows
+        options.cols = Renderer.cols
         options.drop_privileges = False
         options.hardware_mapping = "adafruit-hat"
 
         self.brightness_multiplier = 0.25
 
-        self._rows = rows
-        self._cols = cols
+        self._rows = Renderer.rows
+        self._cols = Renderer.cols
         self._matrix = rgbmatrix.RGBMatrix(options=options)
         self._frame = None
         self._frame_draw = None

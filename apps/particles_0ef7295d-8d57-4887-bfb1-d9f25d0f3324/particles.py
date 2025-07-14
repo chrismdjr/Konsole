@@ -6,11 +6,9 @@ from klib import konsole_renderer
 import time
 import random
 
-MATRIX_ROWS = 64
-MATRIX_COLS = 64
 TARGET_FRAMERATE = 60
 
-renderer = konsole_renderer.Renderer(MATRIX_ROWS, MATRIX_COLS)
+renderer = konsole_renderer.Renderer()
 
 controller = konsole_controller.Controller()
 controller.wait_for_interface(renderer)

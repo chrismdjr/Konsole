@@ -5,14 +5,25 @@ from klib import konsole_renderer
 from klib import konsole_controller
 
 import time
+import os
+import atexit
 
-MATRIX_ROWS = 64
-MATRIX_COLS = 64
 SPLASH_SCREEN_DURATION_SECONDS = 2
 SPLASH_SCREEN_FRAMERATE = 30
+PID_FILE_PATH = "konsole.pid"
+
+def write_pid_file():
+    with open(PID_FILE_PATH, "w") as f:
+        f.write(f"{os.getpid()}")
+
+@atexit.register
+def remove_pid_file():
+    os.remove(PID_FILE_PATH)
 
 def main():
-    renderer = konsole_renderer.Renderer(MATRIX_ROWS, MATRIX_COLS)
+    write_pid_file()
+    
+    renderer = konsole_renderer.Renderer()
 
     # splash screen
     init_brightness_multiplier = renderer.brightness_multiplier
