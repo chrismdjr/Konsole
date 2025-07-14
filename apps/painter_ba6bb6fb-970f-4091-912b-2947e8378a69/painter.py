@@ -32,6 +32,7 @@ controller.start()
 
 brush_position = [32, 32]
 brush_sensitivity = 1
+arrow_key_brush_sensitivity = brush_sensitivity * 0.5
 brush_size_sensitivity = 0.25
 brush_active = False
 brush_color_index = 0
@@ -41,6 +42,7 @@ image = Image.new("RGB", (64, 64))
 draw = ImageDraw.Draw(image)
 
 controller_velocity = [0, 0]
+arrow_key_controller_velocity = [0, 0]
 brush_size_velocity = 0
 
 delta_time = 0
@@ -54,45 +56,65 @@ while True:
         if controller_event.event_type == konsole_controller.ControllerEventType.L3_X_AT_REST:
             controller_velocity[1] = 0
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.L3_Y_AT_REST:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.L3_Y_AT_REST:
             controller_velocity[0] = 0
 
-        if controller_event.event_type in (konsole_controller.ControllerEventType.L3_UP, konsole_controller.ControllerEventType.L3_DOWN):
+        elif controller_event.event_type in (konsole_controller.ControllerEventType.L3_UP, konsole_controller.ControllerEventType.L3_DOWN):
             controller_velocity[1] = brush_sensitivity * controller_event.value * 0.000025
 
-        if controller_event.event_type in (konsole_controller.ControllerEventType.L3_LEFT, konsole_controller.ControllerEventType.L3_RIGHT):
+        elif controller_event.event_type in (konsole_controller.ControllerEventType.L3_LEFT, konsole_controller.ControllerEventType.L3_RIGHT):
             controller_velocity[0] = brush_sensitivity * controller_event.value * 0.000025
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_PRESS:
+        # arrow keys
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.UP_ARROW_PRESS:
+            arrow_key_controller_velocity[1] -= arrow_key_brush_sensitivity
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.DOWN_ARROW_PRESS:
+            arrow_key_controller_velocity[1] += arrow_key_brush_sensitivity
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.UP_OR_DOWN_ARROW_RELEASE:
+            arrow_key_controller_velocity[1] = 0
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.LEFT_ARROW_PRESS:
+            arrow_key_controller_velocity[0] -= arrow_key_brush_sensitivity
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.RIGHT_ARROW_PRESS:
+            arrow_key_controller_velocity[0] += arrow_key_brush_sensitivity
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.LEFT_OR_RIGHT_ARROW_RELEASE:
+            arrow_key_controller_velocity[0] = 0
+
+        elif controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_PRESS:
             brush_active = True
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_RELEASE:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_RELEASE:
             brush_active = False
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.L1_PRESS:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.L1_PRESS:
             brush_color_index -= 1
 
             if brush_color_index < 0:
                 brush_color_index = len(BRUSH_COLORS) - 1
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.R1_PRESS:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.R1_PRESS:
             brush_color_index += 1
 
             if brush_color_index >= len(BRUSH_COLORS):
                 brush_color_index = 0
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.L2_PRESS:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.L2_PRESS:
             brush_size_velocity = -brush_size_sensitivity * (controller_event.value + 32767) * 0.0001
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.R2_PRESS:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.R2_PRESS:
             brush_size_velocity = brush_size_sensitivity * (controller_event.value + 32767) * 0.0001
 
-        if controller_event.event_type == konsole_controller.ControllerEventType.SQUARE_PRESS:
+        elif controller_event.event_type == konsole_controller.ControllerEventType.SQUARE_PRESS:
             image = Image.new("RGB", (64, 64))
             draw = ImageDraw.Draw(image)
 
-    brush_position[0] += controller_velocity[0]
-    brush_position[1] += controller_velocity[1]
+    brush_position[0] += controller_velocity[0] + arrow_key_controller_velocity[0]
+    brush_position[1] += controller_velocity[1] + arrow_key_controller_velocity[1]
     brush_position[0] = min(max(brush_position[0], 0), 64)
     brush_position[1] = min(max(brush_position[1], 0), 64)
     if abs(brush_size_velocity) >= BRUSH_SIZE_VELOCITY_EPSILON:

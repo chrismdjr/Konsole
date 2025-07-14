@@ -10,10 +10,6 @@ TARGET_FRAMERATE = 60
 
 renderer = konsole_renderer.Renderer()
 
-controller = konsole_controller.Controller()
-controller.wait_for_interface(renderer)
-controller.start()
-
 class Particle:
     def __init__(self):
         self.x = 32

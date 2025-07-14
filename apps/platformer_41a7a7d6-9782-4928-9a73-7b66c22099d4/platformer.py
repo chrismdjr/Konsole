@@ -32,22 +32,22 @@ while True:
                 input_cooldown_frames_left = input_cooldown_frames
                 break
 
-            if controller_event.event_type in (konsole_controller.ControllerEventType.L3_DOWN, konsole_controller.ControllerEventType.R3_DOWN) and controller_event.value > input_move_threshold:
+            elif controller_event.event_type in (konsole_controller.ControllerEventType.L3_DOWN, konsole_controller.ControllerEventType.R3_DOWN) and controller_event.value > input_move_threshold:
                 print("down")
                 input_cooldown_frames_left = input_cooldown_frames
                 break
 
-            if controller_event.event_type in (konsole_controller.ControllerEventType.L3_LEFT, konsole_controller.ControllerEventType.R3_LEFT) and controller_event.value < -input_move_threshold:
+            elif controller_event.event_type in (konsole_controller.ControllerEventType.L3_LEFT, konsole_controller.ControllerEventType.R3_LEFT) and controller_event.value < -input_move_threshold:
                 print("left")
                 input_cooldown_frames_left = input_cooldown_frames
                 break
 
-            if controller_event.event_type in (konsole_controller.ControllerEventType.L3_RIGHT, konsole_controller.ControllerEventType.R3_RIGHT) and controller_event.value > input_move_threshold:
+            elif controller_event.event_type in (konsole_controller.ControllerEventType.L3_RIGHT, konsole_controller.ControllerEventType.R3_RIGHT) and controller_event.value > input_move_threshold:
                 print("right")
                 input_cooldown_frames_left = input_cooldown_frames
                 break
 
-            if controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_PRESS:
+            elif controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_PRESS:
                 print("circle")
                 break
 

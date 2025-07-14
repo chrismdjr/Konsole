@@ -51,9 +51,10 @@ def run_main_loop(controller, renderer):
     app_process = None
 
     app_height_pixels = 5
-    input_cooldown_frames = 3
-    input_cooldown_frames_left = 0
-    input_move_threshold = 20000
+    scroll_velocity = 0
+    scroll_threshold = 5000
+    frames_per_scroll = 5
+    frames_until_next_scroll = 0
 
     delta_time = 0
     while True:
@@ -75,38 +76,49 @@ def run_main_loop(controller, renderer):
         # get input
         controller_events = controller.poll_events()
 
-        input_cooldown_frames_left -= 1
-        if input_cooldown_frames_left <= 0:
-            for controller_event in controller_events:
-                if app_process == None:
-                    if (controller_event.event_type in (konsole_controller.ControllerEventType.L3_DOWN, konsole_controller.ControllerEventType.R3_DOWN) and controller_event.value > input_move_threshold) or controller_event.event_type == konsole_controller.ControllerEventType.DOWN_ARROW_PRESS:
-                        selected_app_index += 1
-                        input_cooldown_frames_left = input_cooldown_frames
-                        break
+        for controller_event in controller_events:
+            if app_process == None:
+                if controller_event.event_type == konsole_controller.ControllerEventType.L3_Y_AT_REST:
+                    scroll_velocity = 0
 
-                    elif (controller_event.event_type in (konsole_controller.ControllerEventType.L3_UP, konsole_controller.ControllerEventType.R3_UP) and controller_event.value < -input_move_threshold) or controller_event.event_type == konsole_controller.ControllerEventType.UP_ARROW_PRESS:
-                        selected_app_index -= 1
-                        input_cooldown_frames_left = input_cooldown_frames
-                        break
+                elif controller_event.event_type == konsole_controller.ControllerEventType.L3_DOWN and controller_event.value > scroll_threshold:
+                    scroll_velocity = 1
 
-                    elif controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_PRESS:
-                        renderer.clear(clear_matrix=True)
-                        app_process = subprocess.Popen(["python3", os.path.join(APPS_DIR_PATH, f"{apps[selected_app_index].app_id}/{apps[selected_app_index].entry_point_path}")])
-                        break
+                elif controller_event.event_type == konsole_controller.ControllerEventType.L3_UP and controller_event.value < -scroll_threshold:
+                    scroll_velocity = -1
+                
+                elif controller_event.event_type == konsole_controller.ControllerEventType.L3_DOWN and controller_event.value < scroll_threshold:
+                    scroll_velocity = 0
 
-                    elif controller_event.event_type == konsole_controller.ControllerEventType.TRIANGLE_PRESS:
-                        apps = _load_apps()
-                        renderer.clear()
-                        renderer.draw_text(1, 0, f"RELOADED APPS", (255, 255, 255))
-                        renderer.present()
-                        time.sleep(0.5)
-                        break
+                elif controller_event.event_type == konsole_controller.ControllerEventType.L3_UP and controller_event.value > -scroll_threshold:
+                    scroll_velocity = 0
 
-                else:
-                    if controller_event.event_type == konsole_controller.ControllerEventType.PLAYSTATION_BUTTON_PRESS:
-                        app_process.kill()
-                        app_process = None
-                        break
+                elif controller_event.event_type == konsole_controller.ControllerEventType.DOWN_ARROW_PRESS:
+                    selected_app_index += 1
+
+                elif controller_event.event_type == konsole_controller.ControllerEventType.UP_ARROW_PRESS:
+                    selected_app_index -= 1
+
+                elif controller_event.event_type == konsole_controller.ControllerEventType.CIRCLE_PRESS:
+                    renderer.clear(clear_matrix=True)
+                    app_process = subprocess.Popen(["python3", os.path.join(APPS_DIR_PATH, f"{apps[selected_app_index].app_id}/{apps[selected_app_index].entry_point_path}")])
+
+                elif controller_event.event_type == konsole_controller.ControllerEventType.TRIANGLE_PRESS:
+                    apps = _load_apps()
+                    renderer.clear()
+                    renderer.draw_text(1, 0, f"RELOADED APPS", (255, 255, 255))
+                    renderer.present()
+                    time.sleep(0.5)
+
+            else:
+                if controller_event.event_type == konsole_controller.ControllerEventType.PLAYSTATION_BUTTON_PRESS:
+                    app_process.kill()
+                    app_process = None
+
+        frames_until_next_scroll -= 1
+        if frames_until_next_scroll <= 0:
+            selected_app_index += scroll_velocity
+            frames_until_next_scroll = frames_per_scroll
 
         selected_app_index = max(min(selected_app_index, len(apps) - 1), 0)
 
